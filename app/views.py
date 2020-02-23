@@ -8,6 +8,8 @@ from datetime import timedelta
 @app.before_request
 def make_session_permanent():
     session.permanent = True
+    if 'cart' not in session:
+        session['cart'] = dict()
 
 @app.route('/')
 def main():
@@ -19,7 +21,6 @@ def main():
 
 @app.route('/addtocart/<int:id>')
 def addtocart(id):
-    cart = session.get('cart', [])
     cart.append(id)
     session['cart'] = cart
     session.modified = True
@@ -31,6 +32,8 @@ def addtocart(id):
 
 @app.route('/deletefromcart/<int:id>')
 def deletefromcart(id):
+    meal = Meal.query.filter_by(id=id).first()
+    
     new_cart = list(filter(lambda x: x!= id, session.get('cart')))
     session['cart'] = new_cart
     session.modified = True
@@ -69,7 +72,8 @@ def cart(items):
 @app.route('/account/')
 @login_required
 def account():
-    return render_template("account.html", title='Аккаунт')
+    orders = Order.query.filter_by(clientEmail = current_user.email).all()
+    return render_template("account.html", title='Аккаунт', orders=orders)
 
 @app.route('/login/', methods=['GET','POST'])
 def login():
