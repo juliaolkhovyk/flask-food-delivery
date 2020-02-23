@@ -6,8 +6,21 @@
   <title>{{ title }}</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
-
+<body>
+{% block navigation %}
+  {% include 'navigation.html' %}
+{% endblock %}
 
 {% block body %}{% endblock %}
-
+{% block footer %}
+<footer class="footer">
+  <nav class="container navbar navbar-light bg-light">
+    <ul class="navbar-nav mr-auto">
+      <p class="h4 nav-link">Stepik Delivery</p>
+    </ul>
+    <a class="text-muted" href="#">Project author 2020</a>
+  </nav>
+</footer>
+{% endblock %}
+</body>
 </html>
