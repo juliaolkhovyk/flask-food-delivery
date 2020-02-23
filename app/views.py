@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from app import app, db, login
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import Authorization, Cart, RegistrationForm
-from app.models import User, Category, Meal, Order, StatusType
+from app.models import User, Category, Meal, Order, StatusType, Association
 from datetime import timedelta
 
 @app.before_request
@@ -54,13 +54,13 @@ def cart(items):
                       clientAddress = form.address.data,
                       clientEmail = form.inputEmail.data
         )
-        db.session.add(order)
-        ordered_meals = []
+      
         for meal, count in menu.items():
-            for _ in range(value):
-                order.meals.append(meal)
+            association = Association(order=order, meal_id=int(meal.id), amount=count)
             summ = summ + meal.price * count
+
         order.summ = summ
+        db.session.add(order)
         db.session.commit()
         session.pop('cart')
         menu = dict()
@@ -100,8 +100,7 @@ def registration():
 
     if form.validate_on_submit():
         user = User(name=form.username.data,
-                    email=form.email.data,
-                    address=form.address.data)
+                    email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()

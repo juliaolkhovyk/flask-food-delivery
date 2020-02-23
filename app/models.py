@@ -29,6 +29,19 @@ class User(UserMixin, db.Model):
     def password_valid(self, password):
         return check_password_hash(self.password_hash, password)
 
+class Association(db.Model):
+    __tablename__ = 'orders_meals_association'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    meal_id = db.Column(db.Integer, db.ForeignKey('meals.id'))
+
+    # ... any other fields
+
+    amount = db.Column(db.Integer)
+
+    order = db.relationship('Order', back_populates="meals")
+    meal = db.relationship('Meal', back_populates="orders")
+
 class Meal(db.Model):
     __tablename__ = 'meals'
     id = db.Column(db.Integer, primary_key=True)
@@ -74,18 +87,6 @@ class Order(db.Model):
     def __repr__(self):
         return '<Order {}'.format(self.summ)
 
-class Association(db.Model):
-    __tablename__ = 'orders_meals_association'
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
-    meal_id = db.Column(db.Integer, db.ForeignKey('meals.id'))
-
-    # ... any other fields
-
-    dttm = db.Column(db.DateTime, default=datetime.utcnow)
-
-    order = db.relationship('Order', back_populates="meals")
-    meal = db.relationship('Meal', back_populates="orders")
 
 @login.user_loader
 def load_user(id):
