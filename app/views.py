@@ -8,8 +8,6 @@ from datetime import timedelta
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    if 'cart' not in session:
-        session['cart'] = dict()
 
 @app.route('/')
 def main():
@@ -19,16 +17,18 @@ def main():
         meals[category.rus_title] = Meal.query.filter_by(category=category.id).all()
     return render_template("main.html", meals=meals)
 
+freq = {}
+
 @app.route('/addtocart/<int:id>')
 def addtocart(id):
+    cart = session.get('cart') or []
     cart.append(id)
     session['cart'] = cart
     session.modified = True
-    freq = {}
     for items in session.get('cart'):
         freq[items] = session.get('cart').count(items)
     
-    return redirect(url_for('cart', items=freq))
+    return redirect(url_for('main'))
 
 @app.route('/deletefromcart/<int:id>')
 def deletefromcart(id):
@@ -37,17 +37,14 @@ def deletefromcart(id):
     new_cart = list(filter(lambda x: x!= id, session.get('cart')))
     session['cart'] = new_cart
     session.modified = True
-    freq = {}
-    for items in session.get('cart'):
-        freq[items] = session.get('cart').count(items)
+    del freq[id]
     return redirect(url_for('cart', items=freq))
 
-@app.route('/cart/<items>/', methods=['GET','POST'])
-def cart(items):
-    items = eval(items)
+@app.route('/cart/', methods=['GET','POST'])
+def cart():
     form = Cart()
     menu = dict()
-    for key, value in items.items():
+    for key, value in freq.items():
         meal = Meal.query.filter_by(id=key).first()
         menu[meal] = value
     if form.validate_on_submit():
