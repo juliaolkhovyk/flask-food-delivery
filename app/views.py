@@ -5,6 +5,14 @@ from app.forms import Authorization, Cart, RegistrationForm
 from app.models import User, Category, Meal, Order, StatusType, Association
 from datetime import timedelta
 
+def basket(freq_menu):
+    summ = len(set(freq_menu))
+    sum_money = 0
+    for item in set(freq_menu):
+        meal = Meal.query.filter_by(id=item).first()
+        sum_money += meal.price * freq_menu.count(item)
+    return summ, sum_money
+
 @app.before_request
 def make_session_permanent():
     session.permanent = True
@@ -15,7 +23,7 @@ def main():
     meals = dict()
     for category in categories:
         meals[category.rus_title] = Meal.query.filter_by(category=category.id).all()
-    return render_template("main.html", meals=meals)
+    return render_template("main.html", meals=meals, basket=basket(session.get('cart')))
 
 freq = {}
 
@@ -27,7 +35,6 @@ def addtocart(id):
     session.modified = True
     for items in session.get('cart'):
         freq[items] = session.get('cart').count(items)
-    
     return redirect(url_for('main'))
 
 @app.route('/deletefromcart/<int:id>')
@@ -64,7 +71,9 @@ def cart():
         db.session.commit()
         session.pop('cart')
         menu = dict()
-    return render_template("cart.html", form=form, title="Stepik | Cart", menu=menu)
+    return render_template("cart.html", form=form, title="Stepik | Cart", menu=menu, basket=basket(
+                            session.get('cart')
+    ))
 
 @app.route('/account/')
 @login_required
