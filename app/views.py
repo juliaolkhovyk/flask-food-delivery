@@ -6,12 +6,13 @@ from app.models import User, Category, Meal, Order, StatusType, Association
 from datetime import timedelta
 
 def basket(freq_menu):
-    summ = len(set(freq_menu))
-    sum_money = 0
-    for item in set(freq_menu):
-        meal = Meal.query.filter_by(id=item).first()
-        sum_money += meal.price * freq_menu.count(item)
-    return summ, sum_money
+    if freq_menu:
+        summ = len(set(freq_menu))
+        sum_money = 0
+        for item in set(freq_menu):
+            meal = Meal.query.filter_by(id=item).first()
+            sum_money += meal.price * freq_menu.count(item)
+        return summ, sum_money
 
 @app.before_request
 def make_session_permanent():
