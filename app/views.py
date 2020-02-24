@@ -47,7 +47,8 @@ def deletefromcart(id):
     new_cart = list(filter(lambda x: x!= id, session.get('cart')))
     session['cart'] = new_cart
     session.modified = True
-    del freq[id]
+    if id in freq:
+        del freq[id]
     meal = Meal.query.filter_by(id=id).first()
     flash('Блюдо {} удалено с корзины'.format(meal.title))
     return redirect(url_for('cart', items=freq))
