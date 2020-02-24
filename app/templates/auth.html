@@ -27,6 +27,15 @@
             {{ form.inputPassword.label(class="text-muted") }}
             {{ form.inputPassword(class="form-control") }}
           </div>
+
+          {% for field in form.errors %}
+            {% for error in form.errors[field] %}
+              <div style="color:red;">
+                {{error}}
+              </div>
+            {% endfor %}
+          {% endfor %}
+          
           <div class="checkbox mb-3"></div>
             {{ form.submit(class="btn btn-lg btn-danger btn-block") }}
         </form>
