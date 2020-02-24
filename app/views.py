@@ -36,6 +36,8 @@ def addtocart(id):
     session.modified = True
     for items in session.get('cart'):
         freq[items] = session.get('cart').count(items)
+    meal = Meal.query.filter_by(id=id).first()
+    flash('Блюдо {} добавлено в корзину'.format(meal.title))
     return redirect(url_for('main'))
 
 @app.route('/deletefromcart/<int:id>')
@@ -46,6 +48,8 @@ def deletefromcart(id):
     session['cart'] = new_cart
     session.modified = True
     del freq[id]
+    meal = Meal.query.filter_by(id=id).first()
+    flash('Блюдо {} удалено с корзины'.format(meal.title))
     return redirect(url_for('cart', items=freq))
 
 @app.route('/cart/', methods=['GET','POST'])
@@ -92,9 +96,9 @@ def login():
         print(form.inputEmail.data)
         print(form.inputPassword.data)
         if user is None or not user.password_valid(form.inputPassword.data):
-            flash('Invalid email or password')
             return redirect(url_for('login'))
         login_user(user)
+        flash('Вы успешно вошли в свой аккаунт')
         return redirect(url_for('account'))
     return render_template("auth.html", form=form, title='Stepik delivery')
 

@@ -3,12 +3,13 @@
 
   <main class="container">
     <h1 class="h3 my-4">Корзина</h1>
-    <!--<div id="my-alert" class="alert alert-warning alert-dismissible fade show hide" role="alert">
-      Блюдо удалено из корзины
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-    </div>-->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="message_flash alert alert-danger fade show hide mt-4">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
 
     <div class="row mt-5">
       

@@ -4,6 +4,13 @@
   <main class="container">
     <section class="row">
       <div class="col-12 col-lg-8">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="message_flash alert alert-primary fade show hide mt-4">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        {% endwith %}
         <h1 class="h3 my-5">Личный кабинет. Заказы</h1>
         {% for order in orders %}
         <div class="card">
@@ -39,5 +46,4 @@
       </div>
     </section>
   </main>
- 
 {% endblock %}

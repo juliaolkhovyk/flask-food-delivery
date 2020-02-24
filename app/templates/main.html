@@ -9,6 +9,13 @@
         <p class="pt-4">Доставка дронами</p>
       </div>
     </section>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="message_flash alert alert-success fade show hide mt-4">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
     {% for key, values in meals.items()%}
     <section>
       <h3 class="my-4">{{ key }}</h3>
