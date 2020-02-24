@@ -1,10 +1,10 @@
 <header class="container mt-3">
     <nav class="py-1 navbar navbar-dark bg-dark">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <a class=" h5 my-2 text-white bg-dark" href="{{ url_for('main') }}">Stepik Delivery</a>
+        <a id="navlink" class=" h5 my-2 text-white bg-dark" href="{{ url_for('main') }}">Stepik Delivery</a>
       </ul>
 
-      <a class="my-2 text-white bg-dark " href="{{ url_for('cart') }}">
+      <a class="my-2 text-white bg-dark " id="navlink" href="{{ url_for('cart') }}">
           {% if basket %}
           Корзина ({{ basket[0] }} блюда {{ basket[1] }} руб.)
           {% else %}
