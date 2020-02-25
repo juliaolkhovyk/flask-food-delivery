@@ -14,6 +14,13 @@ def basket(freq_menu):
             sum_money += meal.price * freq_menu.count(item)
         return summ, sum_money
 
+def basket_food(items):
+    freq = dict()
+    for item in items:
+        meal=Meal.query.filter_by(id=item).first()
+        freq[meal] = items.count(item)
+    return freq
+
 @app.before_request
 def make_session_permanent():
     session.permanent = True
@@ -34,8 +41,8 @@ def addtocart(id):
     cart.append(id)
     session['cart'] = cart
     session.modified = True
-    for items in session.get('cart'):
-        freq[items] = session.get('cart').count(items)
+    #for items in session.get('cart'):
+    #    freq[items] = session.get('cart').count(items)
     meal = Meal.query.filter_by(id=id).first()
     flash('Блюдо {} добавлено в корзину'.format(meal.title))
     return redirect(url_for('main'))
@@ -47,18 +54,18 @@ def deletefromcart(id):
     new_cart = list(filter(lambda x: x!= id, session.get('cart')))
     session['cart'] = new_cart
     session.modified = True
-    del freq[id]
+    #del freq[id]
     meal = Meal.query.filter_by(id=id).first()
     flash('Блюдо {} удалено с корзины'.format(meal.title))
-    return redirect(url_for('cart', items=freq))
+    return redirect(url_for('cart', items=basket_food(session.get('cart'))))
 
 @app.route('/cart/', methods=['GET','POST'])
 def cart():
     form = Cart()
-    menu = dict()
-    for key, value in freq.items():
-        meal = Meal.query.filter_by(id=key).first()
-        menu[meal] = value
+    #menu = dict()
+    #for key, value in freq.items():
+    #    meal = Meal.query.filter_by(id=key).first()
+    #    menu[meal] = value
     if form.validate_on_submit():
         summ = 0
         order = Order(clientName = form.name.data,
@@ -67,7 +74,7 @@ def cart():
                       clientEmail = form.inputEmail.data
         )
       
-        for meal, count in menu.items():
+        for meal, count in basket_food(session.get('cart')).items():
             association = Association(order=order, meal_id=int(meal.id), amount=count)
             summ = summ + meal.price * count
 
@@ -75,10 +82,9 @@ def cart():
         db.session.add(order)
         db.session.commit()
         session.pop('cart')
-        menu = dict()
-    return render_template("cart.html", form=form, title="Stepik | Cart", menu=menu, basket=basket(
-                            session.get('cart')
-    ))
+        #menu = dict()
+    return render_template("cart.html", form=form, title="Stepik | Cart",
+     menu=basket_food(session.get('cart')),basket=basket(session.get('cart')))
 
 @app.route('/account/')
 @login_required
