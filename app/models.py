@@ -1,6 +1,5 @@
 from app import db
 import enum
-from sqlalchemy.dialects.postgresql import JSON
 from datetime import datetime
 from validate_email import validate_email
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,7 +15,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(32), unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-    
+
     def __repr__(self):
         return '<User {}>'.format(self.name)
 
@@ -28,6 +27,7 @@ class User(UserMixin, db.Model):
     
     def password_valid(self, password):
         return check_password_hash(self.password_hash, password)
+
 
 class Association(db.Model):
     __tablename__ = 'orders_meals_association'
@@ -42,11 +42,12 @@ class Association(db.Model):
     order = db.relationship('Order', back_populates="meals")
     meal = db.relationship('Meal', back_populates="orders")
 
+
 class Meal(db.Model):
     __tablename__ = 'meals'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
-    price =  db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=False)
     picture = db.Column(db.String(32), nullable=False)
     category = db.Column(db.Integer, db.ForeignKey('categories.id'))
@@ -54,6 +55,7 @@ class Meal(db.Model):
 
     def __repr__(self):
         return '<Meal {}>'.format(self.title)
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -66,10 +68,12 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category {}>'.format(self.title)
 
+
 class StatusType(enum.Enum):
     NEW = 'Новый'
     DELIVERING = 'Выполняется'
     ALREADY = 'Готово'
+
 
 class Order(db.Model):
     __tablename__ = 'orders'
